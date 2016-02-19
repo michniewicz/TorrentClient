@@ -46,7 +46,11 @@ class MetaInfo
 
   def add_files
     @info['files'].inject(0) do |start_byte, file|
-      name = file['path'][0]
+      if file['path'].count > 1 # nested path
+        name = file['path'].join('/')
+      else
+        name = file['path'][0]
+      end
       end_byte = start_byte + file_length(file) - 1
 
       add_file(name, file_length(file), start_byte, end_byte)

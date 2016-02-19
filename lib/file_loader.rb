@@ -134,15 +134,29 @@ class FileLoader
   # @param folder_name [String]
   # @return [Array] @files
   def init_files(folder_name)
-    files_hash = Hash.new
     files_subdirectory = "#{folder_name}/#{@meta_info.folder}"
     Dir.mkdir("#{folder_name}") unless File.directory?("#{folder_name}")
     Dir.mkdir(files_subdirectory) unless File.directory?(files_subdirectory)
     @meta_info.files.each do |file|
-      File.open("#{files_subdirectory}/#{file[:name]}", 'w+')
-      f = File.open("#{files_subdirectory}/#{file[:name]}", 'r+')
-      files_hash["#{file[:name]}"] = f
+      path_array = file[:name].split('/')
+      last_index = path_array.count-1
+      if path_array.count > 1 # file in the nested directory(ies)
+        nested_directory = path_array[0...last_index].join('/') # get nested folders from path
+        FileUtils.mkdir_p "#{files_subdirectory}/#{nested_directory}"
+
+        add_file( "#{files_subdirectory}/#{nested_directory}/#{path_array[last_index]}" )
+      else
+        add_file( "#{files_subdirectory}/#{file[:name]}" )
+      end
     end
-    @files = files_hash.values
+  end
+
+  # initialize and add file to @files array at provided path
+  # @param [String] path
+  def add_file(path)
+    File.open("#{path}", 'w+')
+    f = File.open("#{path}", 'r+')
+
+    @files << f
   end
 end
