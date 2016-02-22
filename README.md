@@ -19,3 +19,4 @@ ruby torrent_app.rb <path/to/torrent_file>
 ```
 More about Bittorrent Protocol Specification:
 https://wiki.theory.org/BitTorrentSpecification
+https://en.wikipedia.org/wiki/Glossary_of_BitTorrent_terms
