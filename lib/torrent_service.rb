@@ -15,6 +15,7 @@ class TorrentService
     @incoming_queue = Queue.new
 
     @scheduler = Scheduler.new(@peers, @meta_info)
+    @file_loader = FileLoader.new(@meta_info)
   end
 
   # start torrent client lifecycle
@@ -54,7 +55,7 @@ class TorrentService
 
   # lambda for FileLoader object
   def file_loader
-    -> { run(@incoming_queue, nil, FileLoader.new(@meta_info), @scheduler) }
+    -> { run(@incoming_queue, nil, @file_loader, @scheduler) }
   end
 
   # run lambda block in a separate Thread
