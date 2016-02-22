@@ -11,17 +11,15 @@ implement seeding;<br>
 implement partial download;<br>
 implement pause/resume;
 
-For using as single app run from terminal
-----
+Using as a standalone app:
 To download a file using TorrentClient, run the following from the root directory:
 
 ```
 ruby torrent_app.rb <path/to/torrent_file> 
 ```
 
-For using as a part of rails app put the project into lib directory of rails application
-----
-
+Using as a part of rails app: 
+put the project into lib directory of rails application
 add this to your application.rb file
 ```
 config.autoload_paths += %W(#{config.root}/lib)
