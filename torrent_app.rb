@@ -1,7 +1,5 @@
-require_relative 'lib/ruby-bencode/lib/bencode.rb'
-# require all the files from lib and /lib/helpers/ directory
-Dir['./lib/*.rb'].each {|file| require file }
-Dir['./lib/helpers/*.rb'].each {|file| require file }
+# file with dependencies
+require_relative 'torrent_lib'
 
 include ThreadHelper
 
