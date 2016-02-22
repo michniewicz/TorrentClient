@@ -66,6 +66,7 @@ class FileLoader
   # @param [Integer] file_offset
   def write_to_file(file, data, file_offset)
     file.seek(file_offset)
+    file.binmode # make sure file is in binmode for avoid ASCII-8BIT to UTF-8 error conversion
     file.write(data)
   end
 
@@ -125,7 +126,7 @@ class FileLoader
   # @param file_name [String]
   def init_file(folder_name, file_name)
     Dir.mkdir("#{folder_name}") unless File.directory?("#{folder_name}")
-    File.open(file_name, 'w+')
+    File.open(file_name, 'wb+')
     File.open(file_name, 'r+')
   end
 
@@ -154,7 +155,7 @@ class FileLoader
   # initialize and add file to @files array at provided path
   # @param [String] path
   def add_file(path)
-    File.open("#{path}", 'w+')
+    File.open("#{path}", 'wb+')
     f = File.open("#{path}", 'r+')
 
     @files << f
