@@ -8,7 +8,8 @@ Downloading single and multiple files with torrent
 
 TODO list:<br>
 implement seeding;<br>
-implement partial download;
+implement partial download;<br>
+implement pause/resume;
 
 Run from terminal
 ----
