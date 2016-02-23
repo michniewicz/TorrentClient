@@ -23,7 +23,7 @@ class TorrentService
     Thread::abort_on_exception = true #TODO delete it
     @peers.each { |peer| peer.perform(@message_queue) }
 
-    run_lambda_in_thread(scheduler)
+    run_lambda_in_thread(request_handler)
     run_lambda_in_thread(incoming_message)
     run_lambda_in_thread(file_loader)
   end
@@ -43,8 +43,8 @@ class TorrentService
     MetaInfo.new(BEncode::Parser.new(torrent_file).parse!)
   end
 
-  # lambda for Scheduler object
-  def scheduler
+  # lambda for RequestHandler object
+  def request_handler
     -> { run(@scheduler.request_queue, nil, RequestHandler.new) }
   end
 
@@ -53,7 +53,7 @@ class TorrentService
     -> { run(@message_queue, @incoming_queue, MessageHandler.new(@meta_info.piece_length)) }
   end
 
-  # lambda for FileLoader object
+  # lambda for FileLoader and Scheduler objects
   def file_loader
     -> { run(@incoming_queue, nil, @file_loader, @scheduler) }
   end
