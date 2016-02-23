@@ -55,7 +55,8 @@ class FileLoader
     @files.each do |file|
       file.close
     end
-    abort('...done...') # TODO implement seeding
+    puts 'finish'
+    ThreadHelper::exit_threads # TODO implement seeding
   end
 
   ####### file operations #######
