@@ -47,7 +47,7 @@ class FileLoader
   def set_download_progress
     files_size = @files.inject(0){|sum,file| sum + file.size }
     @download_progress = ((100 / @meta_info.total_size.to_f) * files_size).to_i
-    PrettyLog.single_line_log("... #{@download_progress}% so far ...")
+    PrettyLog.info("... #{@download_progress}% so far ...")
   end
 
   # finish download operations and close the service
