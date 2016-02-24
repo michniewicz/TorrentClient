@@ -4,11 +4,9 @@ class TorrentService
   include NetworkHelper
 
   HANDSHAKE_TIMEOUT = 5 # Connection handshake timeout in sec
-  TRACKER_EVENT = { :started => 'started', :completed => 'completed', :stopped => 'stopped' }
 
   def initialize(torrent_file)
     @meta_info = parse_meta_info(File.open(torrent_file))
-    @client_id = generate_client_id # fake uTorrent client for now;)
 
     set_peers
 
@@ -27,13 +25,6 @@ class TorrentService
     run_lambda_in_thread(request_handler)
     run_lambda_in_thread(incoming_message)
     run_lambda_in_thread(file_loader)
-  end
-
-  # generate random peer_id in Azureus-style
-  # see https://wiki.theory.org/BitTorrentSpecification#peer_id for reference
-  def generate_client_id
-    id = rand(1e11...1e12).to_i
-    "-UT3130-#{id}"
   end
 
   private
@@ -81,29 +72,13 @@ class TorrentService
     end
   end
 
-  # tracker params to send to uri defined in the torrent file -- @meta_info.announce
-  # TODO add params to set not fully (non 100%) downloaded files and continue downloading
-  # @param [Fixnum] downloaded total number of bytes downloaded
-  # @param [String] event event sent to tracker. If specified, must be one of started, completed, stopped
-  def tracker_params(downloaded, event)
-    { info_hash:  @meta_info.info_hash,
-      peer_id:    @client_id,
-      port:       '6881',
-      uploaded:   '0', # should set total number of bytes uploaded (will track on seeding) Keep hardcoded for now
-      downloaded: downloaded, # should set total number of bytes downloaded
-      left:       @meta_info.total_size - downloaded, # partial download after pause/interrupt is currently not supported
-      compact:    '1',
-      no_peer_id: '0',
-      event:      event }
-  end
-
   ######## peers methods ##########
 
   def set_peers
     @peers = Array.new
     # peers: (binary model) the peers value is a string consisting of multiples of 6 bytes.
-    req = NetworkHelper::get_request(@meta_info.announce, tracker_params(0, TRACKER_EVENT[:started]))
-    peers = BEncode.load(req)['peers'].scan(/.{6}/)
+    req = NetworkHelper::get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, 0, :started))
+    peers = BEncode.load(req)['peers'].scan(/.{6}/) # split string per each 6 bytes
 
     unpack_ports(peers).each do |host, port|
       add_peer(host, port)
@@ -115,7 +90,7 @@ class TorrentService
       # handshake: <pstrlen><pstr><reserved><info_hash><peer_id>
       # In version 1.0 of the BitTorrent protocol, pstrlen = 19 (x13 hex), and pstr = "BitTorrent protocol".
       # reserved: eight (8) reserved bytes. All current implementations use all zeroes.
-      handshake = "\x13BitTorrent protocol\x00\x00\x00\x00\x00\x00\x00\x00#{@meta_info.info_hash}#{@client_id}"
+      handshake = "\x13BitTorrent protocol\x00\x00\x00\x00\x00\x00\x00\x00#{@meta_info.info_hash}#{TrackerInfo::CLIENT_ID}"
       Timeout::timeout(HANDSHAKE_TIMEOUT) { @peers << Peer.new(host, port, handshake, @meta_info.info_hash) }
     rescue => exception
       PrettyLog.error("#{__FILE__}:#{__LINE__} #{exception}")
@@ -127,7 +102,7 @@ class TorrentService
     # All in network (big endian) notation
     # no need to unpack host, it will be passed as a network byte ordered string to IPAddr::ntop
     # result example: ["\xBC\x92\a\xA3", 6881]  for single peer array
-    peers.map {|p| p.unpack('a4n') }
+    peers.map { |p| p.unpack('a4n') }
   end
 
   #################################
