@@ -4,6 +4,7 @@ class TorrentService
   include NetworkHelper
 
   HANDSHAKE_TIMEOUT = 5 # Connection handshake timeout in sec
+  TRACKER_EVENT = { :started => 'started', :completed => 'completed', :stopped => 'stopped' }
 
   def initialize(torrent_file)
     @meta_info = parse_meta_info(File.open(torrent_file))
@@ -82,16 +83,18 @@ class TorrentService
 
   # tracker params to send to uri defined in the torrent file -- @meta_info.announce
   # TODO add params to set not fully (non 100%) downloaded files and continue downloading
-  def tracker_params
+  # @param [Fixnum] downloaded total number of bytes downloaded
+  # @param [String] event event sent to tracker. If specified, must be one of started, completed, stopped
+  def tracker_params(downloaded, event)
     { info_hash:  @meta_info.info_hash,
       peer_id:    @client_id,
       port:       '6881',
-      uploaded:   '0',
-      downloaded: '0',
-      left:       @meta_info.total_size, # partial download after pause/interrupt is currently not supported
+      uploaded:   '0', # should set total number of bytes uploaded (will track on seeding) Keep hardcoded for now
+      downloaded: downloaded, # should set total number of bytes downloaded
+      left:       @meta_info.total_size - downloaded, # partial download after pause/interrupt is currently not supported
       compact:    '1',
       no_peer_id: '0',
-      event:      'started' }
+      event:      event }
   end
 
   ######## peers methods ##########
@@ -99,7 +102,7 @@ class TorrentService
   def set_peers
     @peers = Array.new
     # peers: (binary model) the peers value is a string consisting of multiples of 6 bytes.
-    req = NetworkHelper::get_request(@meta_info.announce, tracker_params)
+    req = NetworkHelper::get_request(@meta_info.announce, tracker_params(0, TRACKER_EVENT[:started]))
     peers = BEncode.load(req)['peers'].scan(/.{6}/)
 
     unpack_ports(peers).each do |host, port|
