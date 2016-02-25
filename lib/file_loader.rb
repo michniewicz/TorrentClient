@@ -3,6 +3,8 @@ require 'fileutils'
 class FileLoader
   include FileUtils
 
+  attr_reader :downloaded_bytes
+
   DOWNLOAD_DIRECTORY_NAME = 'downloads'
 
   def initialize(meta_info)
