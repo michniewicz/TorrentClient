@@ -15,6 +15,7 @@ class TorrentService
 
     @scheduler = Scheduler.new(@peers, @meta_info)
     @file_loader = FileLoader.new(@meta_info)
+    @stop = false
   end
 
   # start torrent client lifecycle
@@ -31,6 +32,7 @@ class TorrentService
   def stop!
     req = NetworkHelper::get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, @file_loader.downloaded_bytes, :stopped))
     PrettyLog.error(' ----- stop! method called -----')
+    @stop = true
     ThreadHelper::exit_threads
   end
 
@@ -69,6 +71,7 @@ class TorrentService
   # @param [Array] handlers
   def run(input, output=nil, *handlers)
     loop do
+      break if @stop # we need this check to avoid race condition on threads exit in stop! method
       message = input.pop
       break unless message
       if output
