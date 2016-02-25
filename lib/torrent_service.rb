@@ -30,7 +30,7 @@ class TorrentService
   # stop downloading (currently unsafe)
   def stop!
     req = NetworkHelper::get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, @file_loader.downloaded_bytes, :stopped))
-    PrettyLog.warn(' ----- stop! method called -----')
+    PrettyLog.error(' ----- stop! method called -----')
     ThreadHelper::exit_threads
   end
 
