@@ -9,7 +9,7 @@ class FileLoader
     @meta_info = meta_info
     @byte_array = ByteArray.new(@meta_info)
     @download_path = "#{DOWNLOAD_DIRECTORY_NAME}/"
-    @download_progress = 0
+    @downloaded_bytes = 0
 
     @files = Array.new
     if @meta_info.single_file?
@@ -45,9 +45,9 @@ class FileLoader
 
   # update progress of downloading
   def set_download_progress
-    files_size = @files.inject(0){|sum,file| sum + file.size }
-    @download_progress = ((100 / @meta_info.total_size.to_f) * files_size).to_i
-    PrettyLog.info("... #{@download_progress}% so far ...")
+    @downloaded_bytes = @files.inject(0){|sum,file| sum + file.size }
+    download_progress = ((100 / @meta_info.total_size.to_f) * @downloaded_bytes).to_i
+    PrettyLog.info("... #{download_progress}% so far ...")
   end
 
   # finish download operations and close the service

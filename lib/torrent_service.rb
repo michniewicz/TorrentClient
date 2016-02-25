@@ -27,6 +27,13 @@ class TorrentService
     run_lambda_in_thread(file_loader)
   end
 
+  # stop downloading (currently unsafe)
+  def stop!
+    req = NetworkHelper::get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, @file_loader.downloaded_bytes, :stopped))
+    PrettyLog.warn(' ----- stop! method called -----')
+    ThreadHelper::exit_threads
+  end
+
   private
 
   # parse metainfo from given torrent file
