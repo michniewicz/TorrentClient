@@ -63,11 +63,35 @@ class Message
     end
   end
 
+  # send choke message
+  # @param [Peer] peer
+  def self.send_choke(peer)
+    length = "\0\0\0\1"
+    id = "\0"
+    peer.connection.write(length + id)
+  end
+
+  # send unchoke message
+  # @param [Peer] peer
+  def self.send_unchoke(peer)
+    length = "\0\0\0\1"
+    id = "\1"
+    peer.connection.write(length + id)
+  end
+
   # send interested message
   # @param [Peer] peer
   def self.send_interested(peer)
     length = "\0\0\0\1"
     id = "\2"
+    peer.connection.write(length + id)
+  end
+
+  # send not interested message
+  # @param [Peer] peer
+  def self.send_not_interested(peer)
+    length = "\0\0\0\1"
+    id = "\3"
     peer.connection.write(length + id)
   end
 
