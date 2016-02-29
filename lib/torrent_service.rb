@@ -6,20 +6,26 @@ class TorrentService
   HANDSHAKE_TIMEOUT = 5 # Connection handshake timeout in sec
 
   def initialize(torrent_file)
-    @meta_info = parse_meta_info(File.open(torrent_file))
-
-    set_peers
+    @torrent_file = torrent_file
 
     @message_queue = Queue.new
     @incoming_queue = Queue.new
 
+    @stop = false
+  end
+
+  # parse meta info and set all variables that depend on that info
+  def init!
+    @meta_info = parse_meta_info(File.open(@torrent_file))
+    set_peers
     @scheduler = Scheduler.new(@peers, @meta_info)
     @file_loader = FileLoader.new(@meta_info)
-    @stop = false
   end
 
   # start torrent client lifecycle
   def start
+    init!
+
     Thread::abort_on_exception = true #TODO delete it
     @peers.each { |peer| peer.perform(@message_queue) }
 
