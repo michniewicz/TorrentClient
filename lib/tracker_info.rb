@@ -1,7 +1,7 @@
 # tracker_info.rb
 
 class TrackerInfo
-  attr_reader :min_interval, :tracker_id, :peers, :failure_reason
+  attr_reader :min_interval, :tracker_id, :peers
   attr_reader :complete, :incomplete
   TRACKER_EVENT = { started: 'started',
                     completed: 'completed',
@@ -11,13 +11,12 @@ class TrackerInfo
   # see https://wiki.theory.org/BitTorrentSpecification#peer_id for reference
   CLIENT_ID = '-UT3130-112233000000'.freeze
 
-  def initialize(min_interval, tracker_id, complete, incomplete, peers, failure_reason)
+  def initialize(min_interval, tracker_id, complete, incomplete, peers)
     @min_interval = min_interval
     @tracker_id = tracker_id
     @complete = complete
     @incomplete = incomplete
     @peers = peers
-    @failure_reason = failure_reason
   end
 
   # returns Hash of tracker params to send to uri defined in the torrent file -- @meta_info.announce
