@@ -54,11 +54,11 @@ class Scheduler
   end
 
   def process(incoming_block)
-    request = get_next_request
+    request = next_request
     enqueue_request(incoming_block, request) if request
   end
 
-  def get_next_request
+  def next_request
     if @block_requests.empty?
       oldest_pending_request
     else
