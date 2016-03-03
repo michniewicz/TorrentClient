@@ -1,7 +1,6 @@
 class MetaInfo
-
   attr_reader :info_hash, :announce, :number_of_pieces,
-                :pieces, :files, :total_size, :piece_length
+              :pieces, :files, :total_size, :piece_length
 
   def initialize(meta_info)
     @info = meta_info['info']
@@ -31,7 +30,7 @@ class MetaInfo
   # get folder name of multiple-files torrent
   # @return [String] folder
   def folder
-    "#{!single_file? ? @info['name'] : ''}"
+    !single_file? ? @info['name'] : ''
   end
 
   # initializes files array by parsing info hash from metainfo
@@ -47,11 +46,8 @@ class MetaInfo
   def add_files
     @info['files'].inject(0) do |start_byte, file|
       path = file['path']
-      if path.count > 1 # nested path
-        name = path.join('/')
-      else
-        name = path[0]
-      end
+      # check whether it is nested path
+      name = path.count > 1 ? path.join('/') : path[0]
       end_byte = start_byte + file_length(file) - 1
 
       add_file(name, file_length(file), start_byte, end_byte)
@@ -75,7 +71,6 @@ class MetaInfo
                    start_byte: start_byte,
                    end_byte: end_byte,
                    length: (end_byte - start_byte + 1) }
-
     end
   end
 
@@ -99,7 +94,7 @@ class MetaInfo
   # @return [String] hash
   def get_correct_hash(index)
     # multiply by 20 since there are 20-byte SHA1 hash values
-    @info['pieces'][20 * index...20 * (index+1)]
+    @info['pieces'][20 * index...20 * (index + 1)]
   end
 
   # returns true if single file torrent

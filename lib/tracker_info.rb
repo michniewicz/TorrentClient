@@ -1,5 +1,3 @@
-# tracker_info.rb
-
 class TrackerInfo
   attr_reader :min_interval, :tracker_id, :peers
   attr_reader :complete, :incomplete

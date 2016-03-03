@@ -1,5 +1,4 @@
 class Peer
-  
   attr_reader :id, :connection, :bitfield
   attr_accessor :pending_requests
 
@@ -50,7 +49,8 @@ class Peer
   end
 
   def set_bitfield
-    length = @connection.read(4).unpack('N')[0] # get length from the connection and unpack it to Integer
+    # get length from the connection and unpack it to Integer
+    length = @connection.read(4).unpack('N')[0]
     message_id = @connection.read(1).bytes[0] # read message ID
     if message_id == 5 # bitfield id is 5
       @bitfield = Bitfield.new(@connection.read(length - 1).unpack('B8' * (length - 1)))
@@ -59,4 +59,3 @@ class Peer
     end
   end
 end
-

@@ -9,18 +9,18 @@ class MessageHandler
   def process(message, output)
     puts "Got message #{message.type} from peer: #{message.peer.id}"
     case message.type
-      when :piece
-        piece_index, byte_offset, block_data = split_piece_payload(message.payload)
-        block = Block.new(piece_index, byte_offset, block_data, message.peer, @piece_length)
-        remove_from_pending(block)
-        output.push(block)
-      when :have
-        message.peer.bitfield.have_piece(message.payload.unpack('N')[0])
-        # A malicious peer might choose to advertise having pieces
-        # that it knows the peer will never download.
-        # TODO handle this case if possible
-      else
-        puts "currently not processed or ignored message type - #{message.type}"
+    when :piece
+      piece_index, byte_offset, block_data = split_piece_payload(message.payload)
+      block = Block.new(piece_index, byte_offset, block_data, message.peer, @piece_length)
+      remove_from_pending(block)
+      output.push(block)
+    when :have
+      message.peer.bitfield.have_piece(message.payload.unpack('N')[0])
+      # A malicious peer might choose to advertise having pieces
+      # that it knows the peer will never download.
+      # TODO handle this case if possible
+    else
+      puts "currently not processed or ignored message type - #{message.type}"
     end
   end
 

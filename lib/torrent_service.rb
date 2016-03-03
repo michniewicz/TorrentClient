@@ -3,7 +3,8 @@ require_relative 'helpers/network_helper'
 class TorrentService
   include NetworkHelper
 
-  HANDSHAKE_TIMEOUT = 5 # Connection handshake timeout in sec
+  # Connection handshake timeout in sec
+  HANDSHAKE_TIMEOUT = 5
 
   def initialize(torrent_file)
     @torrent_file = torrent_file
@@ -117,10 +118,10 @@ class TorrentService
   def add_peer(host, port)
     begin
       pstrlen = "\x13"
-      pstr = "BitTorrent protocol"
+      pstr = 'BitTorrent protocol'
       reserved = "\x00\x00\x00\x00\x00\x00\x00\x00"
       handshake = "#{pstrlen}#{pstr}#{reserved}#{@meta_info.info_hash}#{TrackerInfo::CLIENT_ID}"
-      Timeout::timeout(HANDSHAKE_TIMEOUT) { @peers << Peer.new(host, port, handshake, @meta_info.info_hash) }
+      Timeout.timeout(HANDSHAKE_TIMEOUT) { @peers << Peer.new(host, port, handshake, @meta_info.info_hash) }
     rescue => exception
       PrettyLog.error("#{__FILE__}:#{__LINE__} #{exception}")
     end

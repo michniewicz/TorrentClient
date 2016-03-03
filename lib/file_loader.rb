@@ -10,18 +10,15 @@ class FileLoader
   def initialize(meta_info)
     @meta_info = meta_info
     @byte_array = ByteArray.new(@meta_info)
-    @download_path = "#{DOWNLOAD_DIRECTORY_NAME}/"
     @downloaded_bytes = 0
 
     @files = []
     if @meta_info.single_file?
       temp_n = "#{DOWNLOAD_DIRECTORY_NAME}/#{@meta_info.files[0][:name]}"
-      file = init_file(DOWNLOAD_DIRECTORY_NAME, temp_n)
-      @files << file
+      @files << init_file(DOWNLOAD_DIRECTORY_NAME, temp_n)
     else
       init_files(DOWNLOAD_DIRECTORY_NAME)
     end
-
   end
 
   # process given block and write bytes from block to file
@@ -47,16 +44,14 @@ class FileLoader
 
   # update progress of downloading
   def set_download_progress
-    @downloaded_bytes = @files.inject(0){|sum,file| sum + file.size }
+    @downloaded_bytes = @files.inject(0) { |sum, file| sum + file.size }
     progress = ((100 / @meta_info.total_size.to_f) * @downloaded_bytes).to_i
     PrettyLog.info("... #{progress}% so far ...")
   end
 
   # finish download operations and close the service
   def finish
-    @files.each do |file|
-      file.close
-    end
+    @files.each(&:close)
 
     # let the tracker know we have completed downloading
     params = TrackerInfo.tracker_params(@meta_info, @meta_info.total_size, :completed)
@@ -84,7 +79,6 @@ class FileLoader
   def write_files(block)
     start_byte = block.start_byte
     @meta_info.files.each_with_index do |f, index|
-
       file = @files[index]
       if start_byte >= f[:start_byte] && start_byte <= f[:end_byte]
 
@@ -92,18 +86,18 @@ class FileLoader
           PrettyLog.error("bytesize to write > end of file #{file.path}")
         end
         current_file_offset = start_byte - f[:start_byte]
-        current_file_endbyte = f[:length]-1
-        PrettyLog.error("real_offset < 0") if current_file_offset < 0
+        current_file_endbyte = f[:length] - 1
+        PrettyLog.error('real_offset < 0') if current_file_offset < 0
         current_file_offset = 0 if current_file_offset < 0
         if current_file_offset + block.data.bytesize > current_file_endbyte
 
-          current_file_bytes_count = current_file_endbyte - current_file_offset + 1
-          part = block.data.byteslice(0, current_file_bytes_count)
+          bytes_count = current_file_endbyte - current_file_offset + 1
+          part = block.data.byteslice(0, bytes_count)
           write_to_file(file, part, current_file_offset)
 
-          next_file_bytes = block.data.byteslice(current_file_bytes_count, block.data.length)
-          if @files[index+1]
-            next_file = @files[index+1]
+          next_file_bytes = block.data.byteslice(bytes_count, block.data.length)
+          if @files[index + 1]
+            next_file = @files[index + 1]
             write_to_file(next_file, next_file_bytes, 0)
           end
           break
@@ -135,8 +129,7 @@ class FileLoader
   # @param file_name [String]
   def init_file(folder_name, file_name)
     Dir.mkdir(folder_name) unless File.directory?(folder_name)
-    File.open(file_name, 'wb+')
-    File.open(file_name, 'r+')
+    open_file(file_name)
   end
 
   # creates directories if not exist
@@ -144,19 +137,20 @@ class FileLoader
   # @param folder_name [String]
   # @return [Array] @files
   def init_files(folder_name)
-    files_subdirectory = "#{folder_name}/#{@meta_info.folder}"
+    subdirectory = "#{folder_name}/#{@meta_info.folder}"
     Dir.mkdir(folder_name) unless File.directory?(folder_name)
-    Dir.mkdir(files_subdirectory) unless File.directory?(files_subdirectory)
+    Dir.mkdir(subdirectory) unless File.directory?(subdirectory)
     @meta_info.files.each do |file|
       path_array = file[:name].split('/')
-      last_index = path_array.count-1
+      last_index = path_array.count - 1
       if path_array.count > 1 # file in the nested directory(ies)
-        nested_directory = path_array[0...last_index].join('/') # get nested folders from path
-        FileUtils.mkdir_p "#{files_subdirectory}/#{nested_directory}"
+        # get nested folders from path
+        nested_dir = path_array[0...last_index].join('/')
+        FileUtils.mkdir_p "#{subdirectory}/#{nested_dir}"
 
-        add_file("#{files_subdirectory}/#{nested_directory}/#{path_array[last_index]}")
+        add_file("#{subdirectory}/#{nested_dir}/#{path_array[last_index]}")
       else
-        add_file("#{files_subdirectory}/#{file[:name]}")
+        add_file("#{subdirectory}/#{file[:name]}")
       end
     end
   end
@@ -164,9 +158,14 @@ class FileLoader
   # initialize and add file to @files array at provided path
   # @param [String] path
   def add_file(path)
-    File.open(path, 'wb+')
-    f = File.open(path, 'r+')
+    @files << open_file(path)
+  end
 
-    @files << f
+  # open file with read and write binary access at given path
+  # @param [String] path
+  # @return [File] file
+  def open_file(path)
+    File.open(path, 'wb+')
+    File.open(path, 'r+')
   end
 end
