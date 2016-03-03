@@ -1,5 +1,4 @@
 class ByteArray
-
   def initialize(meta_info)
     @length = meta_info.total_size
     @bytes = Array.new([[0, @length - 1, false]])
@@ -80,7 +79,11 @@ class ByteArray
   # @param [Fixnum] start_byte
   # @param [Fixnum] end_byte
   def check_range(start_byte, end_byte)
-    if start_byte < 0 || end_byte < 0 || start_byte > end_byte || start_byte > @length - 1 || end_byte > @length - 1
+    if start_byte < 0 ||
+       end_byte < 0 ||
+       start_byte > end_byte ||
+       start_byte > @length - 1 ||
+       end_byte > @length - 1
       raise 'ByteArray :: out of range'
     end
   end

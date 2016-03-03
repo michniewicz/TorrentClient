@@ -13,7 +13,7 @@ class FileLoader
     @download_path = "#{DOWNLOAD_DIRECTORY_NAME}/"
     @downloaded_bytes = 0
 
-    @files = Array.new
+    @files = []
     if @meta_info.single_file?
       temp_n = "#{DOWNLOAD_DIRECTORY_NAME}/#{@meta_info.files[0][:name]}"
       file = init_file(DOWNLOAD_DIRECTORY_NAME, temp_n)

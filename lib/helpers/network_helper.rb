@@ -6,7 +6,6 @@ require 'ipaddr'
 require 'timeout'
 
 module NetworkHelper
-
   # helper method for GET request performing
   # @param [String] uri
   # @param [Hash] params
@@ -23,12 +22,9 @@ module NetworkHelper
     end
   end
 
-  private
-
   def self.send_get_request(uri, params)
     request = URI(uri)
     request.query = URI.encode_www_form(params)
     Net::HTTP.get_response(request).body
   end
-
 end

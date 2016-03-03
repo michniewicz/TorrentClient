@@ -9,7 +9,4 @@ class Block
     @start_byte = @piece_index * piece_length + @offset
     @end_byte = @start_byte + @data.length - 1
   end
-
 end
-
-  

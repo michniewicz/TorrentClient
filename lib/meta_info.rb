@@ -36,7 +36,7 @@ class MetaInfo
 
   # initializes files array by parsing info hash from metainfo
   def set_files
-    @files = Array.new
+    @files = []
     if single_file?
       add_file(@info['name'], @info['length'], 0, @info['length'] - 1)
     else
@@ -64,7 +64,7 @@ class MetaInfo
 
   # initializes pieces array with pieces parsed from metainfo
   def set_pieces
-    @pieces = Array.new
+    @pieces = []
     (0...@number_of_pieces).each do |index|
       start_byte = index * @piece_length
       end_byte = get_end_byte(start_byte, index)
@@ -107,5 +107,4 @@ class MetaInfo
   def file_length(file)
     file['length']
   end
-
 end

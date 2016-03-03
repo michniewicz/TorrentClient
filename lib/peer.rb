@@ -4,7 +4,7 @@ class Peer
   attr_accessor :pending_requests
 
   def initialize(host, port, handshake, correct_info_hash)
-    @pending_requests = Array.new
+    @pending_requests = []
     @connection = TCPSocket.new(IPAddr.ntop(host), port)
     @correct_info_hash = correct_info_hash
     perform_handshake(handshake)
@@ -12,7 +12,6 @@ class Peer
 
     @id = @handshake_hash[:peer_id]
   end
-
 
   def perform(message_queue)
     Thread.new { Message.parse_stream(self, message_queue) }
@@ -58,3 +57,4 @@ class Peer
     end
   end
 end
+

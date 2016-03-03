@@ -19,10 +19,12 @@ class TrackerInfo
     @peers = peers
   end
 
-  # returns Hash of tracker params to send to uri defined in the torrent file -- @meta_info.announce
+  # returns Hash of tracker params to send to uri
+  # defined in the torrent file -- @meta_info.announce
   # @param [MetaInfo] meta_info instance of MetaInfo
   # @param [Fixnum] downloaded total number of bytes downloaded
-  # @param [Symbol] event event sent to tracker. If specified, must be one of started, completed, stopped
+  # @param [Symbol] event event sent to tracker.
+  # If specified, must be one of started, completed, stopped
   def self.tracker_params(meta_info, downloaded, event)
     {
       info_hash: meta_info.info_hash,
@@ -36,5 +38,4 @@ class TrackerInfo
       event: TRACKER_EVENT[event]
     }
   end
-
 end

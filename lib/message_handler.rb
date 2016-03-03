@@ -16,8 +16,9 @@ class MessageHandler
         output.push(block)
       when :have
         message.peer.bitfield.have_piece(message.payload.unpack('N')[0])
-        # A malicious peer might choose to advertise having pieces that it knows the peer will never download.
-        # TODO handle this case
+        # A malicious peer might choose to advertise having pieces
+        # that it knows the peer will never download.
+        # TODO handle this case if possible
       else
         puts "currently not processed or ignored message type - #{message.type}"
     end
@@ -30,12 +31,11 @@ class MessageHandler
       req && req[:index] == block.piece_index && req[:offset] == block.offset
     end
   end
-  
+
   def split_piece_payload(payload)
     piece_index = payload.slice!(0..3).unpack('N')[0]
     byte_offset = payload.slice!(0..3).unpack('N')[0]
     block_data = payload
     [piece_index, byte_offset, block_data]
   end
-
 end

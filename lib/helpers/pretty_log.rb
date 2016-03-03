@@ -7,11 +7,11 @@ class PrettyLog
   end
 
   def self.error(message)
-    colored(message, 31);
+    colored(message, 31)
   end
 
   def self.info(message)
-    colored(message, 32);
+    colored(message, 32)
   end
 
   def self.colored(message, color_code)

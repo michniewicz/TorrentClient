@@ -1,5 +1,4 @@
 class Scheduler
-
   # This value should normally be 2^14 (16384) bytes. Smaller values may be used
   # but are usually not needed except in rare cases like a piece
   # length not divisible by 16384.
@@ -46,7 +45,7 @@ class Scheduler
   end
 
   def store_request(index, offset, size)
-    @block_requests.push({index: index, offset: offset, size: size})
+    @block_requests.push({ index: index, offset: offset, size: size })
   end
 
   def assign_request(peer, request)
@@ -78,10 +77,10 @@ class Scheduler
   end
 
   def assign_peer(peer, request)
-    {connection: peer.connection,
-     index: request[:index],
-     offset: request[:offset],
-     size: request[:size]}
+    { connection: peer.connection,
+      index: request[:index],
+      offset: request[:offset],
+      size: request[:size] }
   end
 
   def pieces_count
@@ -111,5 +110,4 @@ class Scheduler
   def block_offset(block_num)
     BLOCK_SIZE * block_num
   end
-
 end

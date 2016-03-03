@@ -10,5 +10,4 @@ class Bitfield
   def have_piece(index)
     @bits[index] = 1
   end
-
 end

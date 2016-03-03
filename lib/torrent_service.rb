@@ -26,7 +26,7 @@ class TorrentService
   def start
     init!
 
-    Thread.abort_on_exception = true #TODO delete it
+    Thread.abort_on_exception = true # TODO delete it
     @peers.each { |peer| peer.perform(@message_queue) }
 
     run_lambda_in_thread(request_handler)
@@ -36,7 +36,8 @@ class TorrentService
 
   # stop downloading (currently unsafe)
   def stop!
-    req = NetworkHelper.get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, @file_loader.downloaded_bytes, :stopped))
+    params = TrackerInfo.tracker_params(@meta_info, @file_loader.downloaded_bytes, :stopped)
+    NetworkHelper.get_request(@meta_info.announce, params)
     PrettyLog.error(' ----- stop! method called -----')
     @stop = true
     ThreadHelper.exit_threads
@@ -91,9 +92,10 @@ class TorrentService
   ######## peers methods ##########
 
   def set_peers
-    @peers = Array.new
+    @peers = []
     # peers: (binary model) the peers value is a string consisting of multiples of 6 bytes.
-    req = NetworkHelper.get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, 0, :started))
+    params = TrackerInfo.tracker_params(@meta_info, 0, :started)
+    req = NetworkHelper.get_request(@meta_info.announce, params)
     peers = BEncode.load(req)['peers'].scan(/.{6}/) # split string per each 6 bytes
 
     unpack_ports(peers).each do |host, port|

@@ -1,17 +1,17 @@
 class Message
 
   # define all messages in the protocol
-  MESSAGES = {'-1' => :keep_alive,
-              '0' => :choke,
-              '1' => :unchoke,
-              '2' => :interested,
-              '3' => :not_interested,
-              '4' => :have,
-              '5' => :bitfield,
-              '6' => :request,
-              '7' => :piece,
-              '8' => :cancel,
-              '9' => :port}.freeze
+  MESSAGES = { '-1' => :keep_alive,
+               '0' => :choke,
+               '1' => :unchoke,
+               '2' => :interested,
+               '3' => :not_interested,
+               '4' => :have,
+               '5' => :bitfield,
+               '6' => :request,
+               '7' => :piece,
+               '8' => :cancel,
+               '9' => :port }.freeze
 
   attr_reader :peer, :length, :type, :payload
 
