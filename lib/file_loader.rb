@@ -59,10 +59,10 @@ class FileLoader
     end
 
     # let the tracker know we have completed downloading
-    req = NetworkHelper::get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, @meta_info.total_size, :completed))
+    req = NetworkHelper.get_request(@meta_info.announce, TrackerInfo.tracker_params(@meta_info, @meta_info.total_size, :completed))
 
     puts 'finish'
-    ThreadHelper::exit_threads # TODO implement seeding
+    ThreadHelper.exit_threads # TODO implement seeding
   end
 
   ####### file operations #######
