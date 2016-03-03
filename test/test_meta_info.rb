@@ -1,11 +1,10 @@
-require "test/unit"
+require 'test/unit'
 require 'digest/sha1'
-require_relative "../lib/meta_info"
-require_relative "../lib/ruby-bencode/lib/bencode"
-require_relative "test_helper"
+require_relative '../lib/meta_info'
+require_relative '../lib/ruby-bencode/lib/bencode'
+require_relative 'test_helper'
 
 class TestMetaInfo < Test::Unit::TestCase
-
   def setup
     file = File.open('test/fixtures/test.torrent')
     @meta_info = MetaInfo.new(BEncode::Parser.new(file).parse!)
@@ -24,11 +23,11 @@ class TestMetaInfo < Test::Unit::TestCase
   end
 
   def test_total_size
-    assert_equal(@meta_info.total_size, 7068431)
+    assert_equal(@meta_info.total_size, 7_068_431)
   end
 
   def test_piece_length
-    assert_equal(@meta_info.piece_length, 32768)
+    assert_equal(@meta_info.piece_length, 32_768)
   end
 
   def test_number_of_pieces
@@ -42,8 +41,7 @@ class TestMetaInfo < Test::Unit::TestCase
   def test_correct_hash
     piece = @meta_info.pieces[0]
     file = File.open('test/fixtures/test_folder/1.png')
-
-    assert_equal(@meta_info.get_correct_hash(0),
-                 Digest::SHA1.new.digest(TestHelper.read(file, piece[:start_byte], piece[:length])))
+    bytes = TestHelper.read(file, piece[:start_byte], piece[:length])
+    assert_equal(@meta_info.get_correct_hash(0), Digest::SHA1.new.digest(bytes))
   end
 end

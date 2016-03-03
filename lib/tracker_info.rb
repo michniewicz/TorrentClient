@@ -1,6 +1,8 @@
-class TrackerInfo
-  attr_reader :min_interval, :tracker_id, :complete, :incomplete, :peers, :failure_reason
+# tracker_info.rb
 
+class TrackerInfo
+  attr_reader :min_interval, :tracker_id, :peers, :failure_reason
+  attr_reader :complete, :incomplete
   TRACKER_EVENT = {:started => 'started', :completed => 'completed', :stopped => 'stopped'}
 
   # create peer_id in Azureus-style

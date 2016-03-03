@@ -18,5 +18,4 @@ require_relative 'lib/request_handler'
 require_relative 'lib/scheduler'
 require_relative 'lib/tracker_info'
 
-
 include ThreadHelper
