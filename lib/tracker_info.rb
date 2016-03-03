@@ -3,11 +3,11 @@
 class TrackerInfo
   attr_reader :min_interval, :tracker_id, :peers, :failure_reason
   attr_reader :complete, :incomplete
-  TRACKER_EVENT = {:started => 'started', :completed => 'completed', :stopped => 'stopped'}
+  TRACKER_EVENT = {:started => 'started', :completed => 'completed', :stopped => 'stopped'}.freeze
 
   # create peer_id in Azureus-style
   # see https://wiki.theory.org/BitTorrentSpecification#peer_id for reference
-  CLIENT_ID = '-UT3130-112233000000'
+  CLIENT_ID = '-UT3130-112233000000'.freeze
 
   def initialize(min_interval, tracker_id, complete, incomplete, peers, failure_reason)
     @min_interval = min_interval

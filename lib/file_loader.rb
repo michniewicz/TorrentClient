@@ -5,7 +5,7 @@ class FileLoader
 
   attr_reader :downloaded_bytes
 
-  DOWNLOAD_DIRECTORY_NAME = 'downloads'
+  DOWNLOAD_DIRECTORY_NAME = 'downloads'.freeze
 
   def initialize(meta_info)
     @meta_info = meta_info

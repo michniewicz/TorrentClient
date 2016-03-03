@@ -11,7 +11,7 @@ class Message
               '6' => :request,
               '7' => :piece,
               '8' => :cancel,
-              '9' => :port}
+              '9' => :port}.freeze
 
   attr_reader :peer, :length, :type, :payload
 
