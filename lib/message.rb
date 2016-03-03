@@ -1,5 +1,4 @@
 class Message
-
   # define all messages in the protocol
   MESSAGES = { '-1' => :keep_alive,
                '0' => :choke,
@@ -28,13 +27,12 @@ class Message
   def self.parse_stream(peer, message_queue)
     loop do
       begin
-
         length = peer.connection.read(4).unpack('N')[0]
         id = length.zero? ? '-1' : peer.connection.readbyte.to_s
         payload = has_payload?(id) ? peer.connection.read(length - 1) : nil
 
         # push message to the queue
-        message_queue << self.new(peer, length, id, payload)
+        message_queue << Message.new(peer, length, id, payload)
       rescue => exception
         PrettyLog.error("#{__FILE__}:#{__LINE__} #{exception}")
         break

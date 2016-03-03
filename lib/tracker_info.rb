@@ -26,16 +26,18 @@ class TrackerInfo
   # @param [Symbol] event event sent to tracker.
   # If specified, must be one of started, completed, stopped
   def self.tracker_params(meta_info, downloaded, event)
-    {
-      info_hash: meta_info.info_hash,
+    { info_hash: meta_info.info_hash,
       peer_id: CLIENT_ID,
       port: '6881',
-      uploaded: '0', # should set total number of bytes uploaded (will track on seeding) Keep hardcoded for now
-      downloaded: downloaded, # should set total number of bytes downloaded
-      left: meta_info.total_size - downloaded, # partial download after pause/interrupt is currently not supported
+      # should set total number of bytes uploaded (will track on seeding)
+      # Keep hardcoded for now
+      uploaded: '0',
+      # should set total number of bytes downloaded
+      downloaded: downloaded,
+      # partial download after pause/interrupt is currently not supported
+      left: meta_info.total_size - downloaded,
       compact: '1',
       no_peer_id: '0',
-      event: TRACKER_EVENT[event]
-    }
+      event: TRACKER_EVENT[event] }
   end
 end

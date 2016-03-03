@@ -29,13 +29,15 @@ class Peer
 
   def set_handshake_hash
     pstrlen = @connection.getbyte
-    @handshake_hash = {
-       pstrlen:   pstrlen,                    # string length of <pstr>, as a single raw byte
-       pstr:      @connection.read(pstrlen),  # string identifier of the protocol
-       reserved:  @connection.read(8),        # eight (8) reserved bytes.
-       info_hash: @connection.read(20),       # 20-byte SHA1 hash of the info key in the metainfo file
-       peer_id:   @connection.read(20)        # 20-byte string used as a unique ID for the client
-    }
+    @handshake_hash = { pstrlen: pstrlen,
+                        # string identifier of the protocol
+                        pstr: @connection.read(pstrlen),
+                        # eight (8) reserved bytes.
+                        reserved: @connection.read(8),
+                        # 20-byte SHA1 hash of the info key in the metainfo file
+                        info_hash: @connection.read(20),
+                        # 20-byte string used as a unique ID for the client
+                        peer_id: @connection.read(20) }
   end
 
   def verify_handshake

@@ -46,10 +46,11 @@ class MetaInfo
 
   def add_files
     @info['files'].inject(0) do |start_byte, file|
-      if file['path'].count > 1 # nested path
-        name = file['path'].join('/')
+      path = file['path']
+      if path.count > 1 # nested path
+        name = path.join('/')
       else
-        name = file['path'][0]
+        name = path[0]
       end
       end_byte = start_byte + file_length(file) - 1
 
@@ -70,7 +71,10 @@ class MetaInfo
       end_byte = get_end_byte(start_byte, index)
       hash = get_correct_hash(index)
 
-      @pieces << {hash: hash, start_byte: start_byte, end_byte: end_byte, length: (end_byte - start_byte + 1)}
+      @pieces << { hash: hash,
+                   start_byte: start_byte,
+                   end_byte: end_byte,
+                   length: (end_byte - start_byte + 1) }
 
     end
   end
@@ -94,7 +98,8 @@ class MetaInfo
   # @param [Fixnum] index
   # @return [String] hash
   def get_correct_hash(index)
-    @info['pieces'][20 * index...20 * (index+1)] # multiply by 20 since there are 20-byte SHA1 hash values
+    # multiply by 20 since there are 20-byte SHA1 hash values
+    @info['pieces'][20 * index...20 * (index+1)]
   end
 
   # returns true if single file torrent

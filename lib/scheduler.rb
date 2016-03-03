@@ -45,7 +45,7 @@ class Scheduler
   end
 
   def store_request(index, offset, size)
-    @block_requests.push({ index: index, offset: offset, size: size })
+    @block_requests.push(index: index, offset: offset, size: size)
   end
 
   def assign_request(peer, request)

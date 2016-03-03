@@ -26,7 +26,8 @@ class TorrentService
   def start
     init!
 
-    Thread.abort_on_exception = true # TODO delete it
+    # TODO delete it when stable
+    Thread.abort_on_exception = true
     @peers.each { |peer| peer.perform(@message_queue) }
 
     run_lambda_in_thread(request_handler)
@@ -36,7 +37,8 @@ class TorrentService
 
   # stop downloading (currently unsafe)
   def stop!
-    params = TrackerInfo.tracker_params(@meta_info, @file_loader.downloaded_bytes, :stopped)
+    bytes = @file_loader.downloaded_bytes
+    params = TrackerInfo.tracker_params(@meta_info, bytes, :stopped)
     NetworkHelper.get_request(@meta_info.announce, params)
     PrettyLog.error(' ----- stop! method called -----')
     @stop = true
@@ -76,9 +78,10 @@ class TorrentService
   # @param [Queue] input
   # @param [Queue] output
   # @param [Array] handlers
-  def run(input, output=nil, *handlers)
+  def run(input, output = nil, *handlers)
     loop do
-      break if @stop # we need this check to avoid race condition on threads exit in stop! method
+      # check to avoid race condition on threads exit in stop! method
+      break if @stop
       message = input.pop
       break unless message
       if output
@@ -93,22 +96,30 @@ class TorrentService
 
   def set_peers
     @peers = []
-    # peers: (binary model) the peers value is a string consisting of multiples of 6 bytes.
+    # peers: (binary model) the peers value is a string
+    # consisting of multiples of 6 bytes.
     params = TrackerInfo.tracker_params(@meta_info, 0, :started)
     req = NetworkHelper.get_request(@meta_info.announce, params)
-    peers = BEncode.load(req)['peers'].scan(/.{6}/) # split string per each 6 bytes
+    # split string per each 6 bytes
+    peers = BEncode.load(req)['peers'].scan(/.{6}/)
 
     unpack_ports(peers).each do |host, port|
       add_peer(host, port)
     end
   end
 
+  # handshake: <pstrlen><pstr><reserved><info_hash><peer_id>
+  # In version 1.0 of the BitTorrent protocol,
+  # pstrlen = 19 (x13 hex), and
+  # pstr = "BitTorrent protocol".
+  # reserved: eight (8) reserved bytes.
+  # All current implementations use all zeroes.
   def add_peer(host, port)
     begin
-      # handshake: <pstrlen><pstr><reserved><info_hash><peer_id>
-      # In version 1.0 of the BitTorrent protocol, pstrlen = 19 (x13 hex), and pstr = "BitTorrent protocol".
-      # reserved: eight (8) reserved bytes. All current implementations use all zeroes.
-      handshake = "\x13BitTorrent protocol\x00\x00\x00\x00\x00\x00\x00\x00#{@meta_info.info_hash}#{TrackerInfo::CLIENT_ID}"
+      pstrlen = "\x13"
+      pstr = "BitTorrent protocol"
+      reserved = "\x00\x00\x00\x00\x00\x00\x00\x00"
+      handshake = "#{pstrlen}#{pstr}#{reserved}#{@meta_info.info_hash}#{TrackerInfo::CLIENT_ID}"
       Timeout::timeout(HANDSHAKE_TIMEOUT) { @peers << Peer.new(host, port, handshake, @meta_info.info_hash) }
     rescue => exception
       PrettyLog.error("#{__FILE__}:#{__LINE__} #{exception}")
@@ -116,9 +127,11 @@ class TorrentService
   end
 
   def unpack_ports(peers)
-    # first 4 bytes of each peer are the IP address and last 2 bytes are the port number.
+    # first 4 bytes of each peer are the IP address
+    # and last 2 bytes are the port number.
     # All in network (big endian) notation
-    # no need to unpack host, it will be passed as a network byte ordered string to IPAddr::ntop
+    # no need to unpack host, it will be passed as a network byte
+    # ordered string to IPAddr::ntop
     # result example: ["\xBC\x92\a\xA3", 6881]  for single peer array
     peers.map { |p| p.unpack('a4n') }
   end

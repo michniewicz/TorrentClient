@@ -32,8 +32,8 @@ class ByteArray
     end
 
     result.map! do |item|
-      unless item.nil?
-        item = nil if item[0] > item[1]
+      if !item.nil? && item[0] > item[1]
+        item = nil
       end
       item
     end
@@ -45,8 +45,8 @@ class ByteArray
 
     # consolidate bytes
     (0...@bytes.length - 1).each do |i|
-      if @bytes[i][2] == @bytes[i+1][2]
-        @bytes[i+1][0] = @bytes[i][0]
+      if @bytes[i][2] == @bytes[i + 1][2]
+        @bytes[i + 1][0] = @bytes[i][0]
         @bytes[i] = nil
       end
     end
