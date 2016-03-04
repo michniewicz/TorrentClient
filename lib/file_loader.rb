@@ -31,6 +31,11 @@ class FileLoader
     finish if @byte_array.complete?
   end
 
+  # removes torrent directory and its content if exists
+  def delete_content
+    FileUtils.remove_dir(@meta_info.folder) unless @meta_info.folder.empty?
+  end
+
   private
 
   # track saved piece of data from files
