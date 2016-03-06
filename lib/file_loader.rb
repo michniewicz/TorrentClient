@@ -6,6 +6,7 @@ class FileLoader
   attr_reader :downloaded_bytes
 
   DOWNLOAD_DIRECTORY_NAME = 'downloads'.freeze
+  PRIORITY = { normal: 'normal', skip: 'skip' }.freeze
 
   def initialize(meta_info)
     @meta_info = meta_info

@@ -8,16 +8,15 @@ class TorrentService
 
   def initialize(torrent_file)
     @torrent_file = torrent_file
-
+    @files_to_load = []
     @message_queue = Queue.new
     @incoming_queue = Queue.new
-
+    @meta_info = parse_meta_info(File.open(@torrent_file))
     @stop = false
   end
 
   # parse meta info and set all variables that depend on that info
   def init!
-    @meta_info = parse_meta_info(File.open(@torrent_file))
     set_peers
     @scheduler = Scheduler.new(@peers, @meta_info)
     @file_loader = FileLoader.new(@meta_info)
@@ -44,6 +43,18 @@ class TorrentService
     PrettyLog.error(' ----- stop! method called -----')
     @stop = true
     ThreadHelper.exit_threads
+  end
+
+  # returns list of files described in metainfo
+  # @return [Array] files
+  def get_files_list
+    @meta_info.files
+  end
+
+  # set files selected for downloading
+  def set_priorities(files)
+    @files_to_load = files
+    # TODO call this before start download
   end
 
   private
