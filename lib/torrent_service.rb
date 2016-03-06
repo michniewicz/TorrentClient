@@ -13,6 +13,7 @@ class TorrentService
     @incoming_queue = Queue.new
     @meta_info = parse_meta_info(File.open(@torrent_file))
     @stop = false
+    @file_loader = nil
   end
 
   # parse meta info and set all variables that depend on that info
@@ -37,9 +38,12 @@ class TorrentService
 
   # stop downloading (currently unsafe)
   def stop!
-    bytes = @file_loader.downloaded_bytes
-    params = TrackerInfo.tracker_params(@meta_info, bytes, :stopped)
-    NetworkHelper.get_request(@meta_info.announce, params)
+    # check @file_loader loader was already initialized with data
+    if @file_loader
+      bytes = @file_loader.downloaded_bytes
+      params = TrackerInfo.tracker_params(@meta_info, bytes, :stopped)
+      NetworkHelper.get_request(@meta_info.announce, params)
+    end
     PrettyLog.error(' ----- stop! method called -----')
     @stop = true
     ThreadHelper.exit_threads
