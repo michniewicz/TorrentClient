@@ -21,10 +21,16 @@ class MetaInfo
     if single_file?
       @total_size = @info['length']
     else
-      @total_size = @info['files'].inject(0) do |start_byte, file|
-        start_byte + file_length(file)
-      end
+      @total_size = count_size(@info['files'])
     end
+  end
+
+  # returns size of selected files described in metainfo
+  # @param [Array] files
+  # @return files size
+  def get_selected_size(files = nil)
+    return @total_size unless files
+    count_size(files)
   end
 
   # get folder name of multiple-files torrent
@@ -106,5 +112,12 @@ class MetaInfo
   # @param [Hash] file
   def file_length(file)
     file['length']
+  end
+
+  def count_size(files)
+    size = files.inject(0) do |start_byte, file|
+      start_byte + file_length(file)
+    end
+    size
   end
 end
