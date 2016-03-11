@@ -18,4 +18,5 @@ require_relative 'lib/request_handler'
 require_relative 'lib/scheduler'
 require_relative 'lib/tracker_info'
 
+require_relative 'lib/ruby_statvfs/statvfs'
 include ThreadHelper

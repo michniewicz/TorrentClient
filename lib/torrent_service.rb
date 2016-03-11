@@ -18,6 +18,9 @@ class TorrentService
 
   # parse meta info and set all variables that depend on that info
   def init!
+    # just warn for now
+    PrettyLog.error('not enough free space') unless free_space_available?
+
     set_peers
     @scheduler = Scheduler.new(@peers, @meta_info)
     @file_loader = FileLoader.new(@meta_info)
@@ -153,4 +156,12 @@ class TorrentService
   end
 
   #################################
+
+  # checks if there is enough space on the hard drive
+  # @return true if available
+  def free_space_available?
+    info = StatVFS.new.info
+    free_bytes = info['f_bfree'] * info['f_bsize']
+    return free_bytes > @meta_info.total_size
+  end
 end
