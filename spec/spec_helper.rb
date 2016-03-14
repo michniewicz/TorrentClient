@@ -20,6 +20,7 @@ RSpec.configure do |config|
   require 'digest/sha1'
   require_relative '../lib/meta_info'
   require_relative '../lib/ruby-bencode/lib/bencode'
+  require_relative '../lib/helpers/serializer'
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.

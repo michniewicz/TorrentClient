@@ -2,6 +2,7 @@
 require_relative 'lib/helpers/thread_helper'
 require_relative 'lib/helpers/network_helper'
 require_relative 'lib/helpers/pretty_log'
+require_relative 'lib/helpers/serializer'
 
 require_relative 'lib/ruby-bencode/lib/bencode'
 
