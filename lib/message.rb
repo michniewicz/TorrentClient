@@ -1,3 +1,7 @@
+##
+# Represents Message class and its methods
+# used to send and parse messages
+#
 class Message
   # define all messages in the protocol
   MESSAGES = { '-1' => :keep_alive,

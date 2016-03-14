@@ -1,3 +1,6 @@
+##
+# Represents Scheduler class and its methods
+#
 class Scheduler
   # This value should normally be 2^14 (16384) bytes. Smaller values may be used
   # but are usually not needed except in rare cases like a piece

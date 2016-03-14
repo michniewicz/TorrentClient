@@ -1,3 +1,7 @@
+##
+# Represents Bitfield class and its methods
+# contains array of bits
+#
 class Bitfield
   attr_reader :bits
 

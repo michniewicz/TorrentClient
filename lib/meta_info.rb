@@ -1,3 +1,7 @@
+##
+# Represents MetaInfo class
+# contains metainfo of given torrent file and helper methods
+#
 class MetaInfo
   attr_reader :info_hash, :announce, :number_of_pieces,
               :pieces, :files, :total_size, :piece_length

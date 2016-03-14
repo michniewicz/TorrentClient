@@ -1,3 +1,7 @@
+##
+# Represents MessageHandler class and its methods
+# processes given messages
+#
 class MessageHandler
   def initialize(piece_length)
     @piece_length = piece_length

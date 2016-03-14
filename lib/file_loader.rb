@@ -1,5 +1,7 @@
 require 'fileutils'
-
+##
+# Represents FileLoader class and its methods
+#
 class FileLoader
   include FileUtils
 

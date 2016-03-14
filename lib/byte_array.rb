@@ -1,3 +1,7 @@
+##
+# Represents ByteArray class and its methods
+# class is being used to keep track on recorded bytes
+#
 class ByteArray
   def initialize(meta_info)
     @length = meta_info.total_size

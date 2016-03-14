@@ -1,3 +1,7 @@
+##
+# Represents Peer class
+# performs peer logic (handshake, sends messages)
+#
 class Peer
   attr_reader :id, :connection, :bitfield
   attr_accessor :pending_requests

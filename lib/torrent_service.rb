@@ -1,5 +1,7 @@
 require_relative 'helpers/network_helper'
-
+##
+# Represents TorrentService class and its methods
+#
 class TorrentService
   include NetworkHelper
 

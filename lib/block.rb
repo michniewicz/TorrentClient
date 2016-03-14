@@ -1,3 +1,7 @@
+##
+# Represents Block class and its methods
+# contains given block info
+#
 class Block
   attr_reader :piece_index, :offset, :data, :peer, :start_byte, :end_byte
 
