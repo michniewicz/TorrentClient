@@ -212,6 +212,6 @@ class FileLoader
     else
       filename = @meta_info.folder
     end
-    "#{FileLoader::DOWNLOAD_DIRECTORY_NAME}/#{filename}.dat"
+    "#{DOWNLOAD_DIRECTORY_NAME}/#{filename}.dat"
   end
 end
