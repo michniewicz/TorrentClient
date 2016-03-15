@@ -9,7 +9,6 @@ Downloading single and multiple files with torrent
 TODO list:<br>
 implement seeding;<br>
 implement partial download;<br>
-implement pause/resume;
 
 Using as a standalone app:<br>
 To download a file using TorrentClient, run the following from the root directory:
