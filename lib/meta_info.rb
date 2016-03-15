@@ -40,7 +40,14 @@ class MetaInfo
   # get folder name of multiple-files torrent
   # @return [String] folder
   def folder
-    !single_file? ? @info['name'] : ''
+    !single_file? ? file_name : ''
+  end
+
+  # returns file name of from metainfo
+  # returns file name if single file
+  # returns directory name if multiple files
+  def file_name
+    @info['name']
   end
 
   # initializes files array by parsing info hash from metainfo

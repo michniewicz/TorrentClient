@@ -39,7 +39,11 @@ class FileLoader
 
   # removes torrent directory and its content if exists
   def delete_content
-    FileUtils.remove_dir(@meta_info.folder) unless @meta_info.folder.empty?
+    if @meta_info.single_file?
+      File.delete(@meta_info.file_name)
+    else
+      FileUtils.remove_dir(@meta_info.folder) unless @meta_info.folder.empty?
+    end
   end
 
   # returns true if content file exists
@@ -203,6 +207,11 @@ class FileLoader
 
   # returns name of file with serialized data about this torrent files
   def datafile_name
-    "#{FileLoader::DOWNLOAD_DIRECTORY_NAME}/#{@meta_info.folder}.dat"
+    if @meta_info.folder.empty?
+      filename = @meta_info.file_name # get single file name
+    else
+      filename = @meta_info.folder
+    end
+    "#{FileLoader::DOWNLOAD_DIRECTORY_NAME}/#{filename}.dat"
   end
 end
