@@ -3,6 +3,8 @@
 # class is being used to keep track on recorded bytes
 #
 class ByteArray
+  attr_reader :bytes
+
   def initialize(meta_info)
     @length = meta_info.total_size
     @bytes = Array.new([[0, @length - 1, false]])
@@ -61,6 +63,17 @@ class ByteArray
   # returns true if all the bytes for files were loaded and written
   def complete?
     @bytes == [[0, @length - 1, true]]
+  end
+
+  # parses json byte array and saves to @bytes
+  def parse_json_array!(json_array)
+    json_array.each do |item|
+      item[0] = item[0].to_i # TODO CHECK IF TO_I IS A GOOD IDEA
+      item[1] = item[1].to_i
+      item[2] = item[2].to_s.downcase == 'true'
+    end
+
+    @bytes = json_array
   end
 
   private

@@ -4,8 +4,9 @@ require 'fileutils'
 #
 class FileLoader
   include FileUtils
+  include Serializer
 
-  attr_reader :downloaded_bytes
+  attr_reader :downloaded_bytes, :byte_array, :progress
 
   DOWNLOAD_DIRECTORY_NAME = 'downloads'.freeze
   PRIORITY = { normal: 'normal', skip: 'skip' }.freeze
@@ -14,6 +15,7 @@ class FileLoader
     @meta_info = meta_info
     @byte_array = ByteArray.new(@meta_info)
     @downloaded_bytes = 0
+    @progress = 0
 
     @files = []
     if @meta_info.single_file?
@@ -22,6 +24,7 @@ class FileLoader
     else
       init_files(DOWNLOAD_DIRECTORY_NAME)
     end
+    set_download_progress
   end
 
   # process given block and write bytes from block to file
@@ -39,12 +42,25 @@ class FileLoader
     FileUtils.remove_dir(@meta_info.folder) unless @meta_info.folder.empty?
   end
 
+  # returns true if content file exists
+  def content_exists?
+    File.exist?(datafile_name)
+  end
+
+  # restores bytes from .dat file to ByteArray
+  def restore_data
+    data = Serializer.deserialize(datafile_name)
+    bytes = data['byte_array']
+    @byte_array.parse_json_array!(bytes)
+  end
+
   private
 
   # track saved piece of data from files
   def record(block)
     begin
       @byte_array.record_bytes(block.start_byte, block.end_byte)
+      save_data! # save it here, right after byte array was updated
     rescue => exception
       PrettyLog.error("#{__FILE__}:#{__LINE__} #{exception}")
     end
@@ -53,8 +69,8 @@ class FileLoader
   # update progress of downloading
   def set_download_progress
     @downloaded_bytes = @files.inject(0) { |sum, file| sum + file.size }
-    progress = ((100 / @meta_info.total_size.to_f) * @downloaded_bytes).to_i
-    PrettyLog.info("... #{progress}% so far ...")
+    @progress = ((100 / @meta_info.total_size.to_f) * @downloaded_bytes).to_i
+    PrettyLog.info("... #{@progress}% so far ...")
   end
 
   # finish download operations and close the service
@@ -65,6 +81,7 @@ class FileLoader
     params = TrackerInfo.tracker_params(@meta_info, @meta_info.total_size, :completed)
     NetworkHelper.get_request(@meta_info.announce, params)
 
+    remove_file(datafile_name)
     puts 'finish'
     ThreadHelper.exit_threads # TODO implement seeding
   end
@@ -173,7 +190,19 @@ class FileLoader
   # @param [String] path
   # @return [File] file
   def open_file(path)
-    File.open(path, 'wb+')
+    File.open(path, 'ab+')
     File.open(path, 'r+')
+  end
+
+  # keeps the data about loaded bytes in the temporary file
+  def save_data!
+    data = {}
+    data[:byte_array] = @byte_array.bytes
+    Serializer.serialize(datafile_name, data)
+  end
+
+  # returns name of file with serialized data about this torrent files
+  def datafile_name
+    "#{FileLoader::DOWNLOAD_DIRECTORY_NAME}/#{@meta_info.folder}.dat"
   end
 end

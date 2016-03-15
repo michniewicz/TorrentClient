@@ -1,4 +1,3 @@
-require_relative 'helpers/network_helper'
 ##
 # Represents TorrentService class and its methods
 #
@@ -23,9 +22,19 @@ class TorrentService
     # just warn for now
     PrettyLog.error('not enough free space') unless free_space_available?
 
-    set_peers
-    @scheduler = Scheduler.new(@peers, @meta_info)
     @file_loader = FileLoader.new(@meta_info)
+
+    if @file_loader.content_exists?
+      @file_loader.restore_data
+      bytes_so_far = @file_loader.downloaded_bytes
+      params = TrackerInfo.tracker_params(@meta_info, bytes_so_far, :started)
+    else
+      params = TrackerInfo.tracker_params(@meta_info, 0, :started)
+    end
+
+    set_peers(params)
+
+    @scheduler = Scheduler.new(@peers, @meta_info)
   end
 
   # start torrent client lifecycle
@@ -115,11 +124,10 @@ class TorrentService
 
   ######## peers methods ##########
 
-  def set_peers
+  def set_peers(params)
     @peers = []
     # peers: (binary model) the peers value is a string
     # consisting of multiples of 6 bytes.
-    params = TrackerInfo.tracker_params(@meta_info, 0, :started)
     req = NetworkHelper.get_request(@meta_info.announce, params)
     # split string per each 6 bytes
     peers = BEncode.load(req)['peers'].scan(/.{6}/)
