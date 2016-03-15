@@ -4,7 +4,9 @@ require 'socket'
 require 'digest/sha1'
 require 'ipaddr'
 require 'timeout'
-
+##
+# Describes NetworkHelper module and its methods
+#
 module NetworkHelper
   # helper method for GET request performing
   # @param [String] uri

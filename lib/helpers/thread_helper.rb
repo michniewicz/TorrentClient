@@ -1,5 +1,7 @@
 require 'thread'
-
+##
+# Describes ThreadHelper module and its methods
+#
 module ThreadHelper
   def join_thread_list
     Thread.list.each { |thread| thread.join unless thread == Thread.current }

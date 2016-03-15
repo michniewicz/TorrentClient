@@ -1,3 +1,7 @@
+##
+# Describes PrettyLog class and its methods
+# used for colored logging
+#
 class PrettyLog
   def self.single_line_log(message)
     print " #{message} "
