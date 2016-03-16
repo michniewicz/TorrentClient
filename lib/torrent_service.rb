@@ -80,7 +80,7 @@ class TorrentService
   # parse metainfo from given torrent file
   # @param [String] torrent_file
   def parse_meta_info(torrent_file)
-    MetaInfo.new(BEncode::Parser.new(torrent_file).parse!)
+    MetaInfo.new(BEncode.load_file(torrent_file))
   end
 
   # lambda for RequestHandler object
