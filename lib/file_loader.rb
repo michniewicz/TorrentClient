@@ -58,6 +58,11 @@ class FileLoader
     @byte_array.parse_json_array!(bytes)
   end
 
+  # returns true if all the data is loaded for this metainfo
+  def completed?
+    @downloaded_bytes == @meta_info.total_size
+  end
+
   private
 
   # track saved piece of data from files

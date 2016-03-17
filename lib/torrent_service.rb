@@ -26,28 +26,21 @@ class TorrentService
 
     if @file_loader.content_exists?
       @file_loader.restore_data
-      bytes_so_far = @file_loader.downloaded_bytes
-      params = TrackerInfo.tracker_params(@meta_info, bytes_so_far, :started)
-    else
-      params = TrackerInfo.tracker_params(@meta_info, 0, :started)
     end
-
-    set_peers(params)
-
-    @scheduler = Scheduler.new(@peers, @meta_info)
   end
 
   # start torrent client lifecycle
   def start
     init!
 
-    # TODO delete it when stable
-    Thread.abort_on_exception = true
-    @peers.each { |peer| peer.perform(@message_queue) }
+    if @file_loader.completed?
+      PrettyLog.error('100%...seeding is still not implemented -- exit')
+      return
+    end
 
-    run_lambda_in_thread(request_handler)
-    run_lambda_in_thread(incoming_message)
-    run_lambda_in_thread(file_loader)
+    request_peers
+    @scheduler = Scheduler.new(@peers, @meta_info)
+    launch_processes
   end
 
   # stop downloading (currently unsafe)
@@ -76,6 +69,16 @@ class TorrentService
   end
 
   private
+
+  def launch_processes
+    # TODO delete it when stable
+    Thread.abort_on_exception = true
+    @peers.each { |peer| peer.perform(@message_queue) }
+
+    run_lambda_in_thread(request_handler)
+    run_lambda_in_thread(incoming_message)
+    run_lambda_in_thread(file_loader)
+  end
 
   # parse metainfo from given torrent file
   # @param [String] torrent_file
@@ -124,6 +127,15 @@ class TorrentService
 
   ######## peers methods ##########
 
+  # set tracker params and set peers
+  def request_peers
+    bytes_so_far = @file_loader.downloaded_bytes
+    params = TrackerInfo.tracker_params(@meta_info, bytes_so_far, :started)
+
+    set_peers(params)
+  end
+
+  # performs request and unpacks peers host/port
   def set_peers(params)
     @peers = []
     # peers: (binary model) the peers value is a string
