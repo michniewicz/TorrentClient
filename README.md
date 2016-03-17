@@ -7,8 +7,9 @@ Currently implemented functionality:<br>
 Downloading single and multiple files with torrent
 
 TODO list:<br>
-implement seeding;<br>
 implement partial download;<br>
+add magnet links support;<br>
+implement seeding;<br>
 
 Using as a standalone app:<br>
 To download a file using TorrentClient, run the following from the root directory:
@@ -26,5 +27,5 @@ require './lib/TorrentClient/torrent_lib'
 ```
 
 More about Bittorrent Protocol Specification:<br>
-https://wiki.theory.org/BitTorrentSpecification
+https://wiki.theory.org/BitTorrentSpecification<br>
 https://en.wikipedia.org/wiki/Glossary_of_BitTorrent_terms
