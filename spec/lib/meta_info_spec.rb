@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe MetaInfo do
-  let(:meta_info) { MetaInfo.new(BEncode.load_file('spec/fixtures/test.torrent')) }
+  let(:meta_info) { MetaInfo.new(Bencode::Decoder.decode_file('spec/fixtures/test.torrent')) }
 
   it 'returns folder' do
     expect(meta_info.folder.force_encoding('UTF-8')).to eq 'test_folder'

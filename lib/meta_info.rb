@@ -8,7 +8,7 @@ class MetaInfo
 
   def initialize(meta_info)
     @info = meta_info['info']
-    @info_hash = Digest::SHA1.new.digest(@info.bencode)
+    @info_hash = Digest::SHA1.new.digest(Bencode::Encoder.encode(@info))
 
     @piece_length = @info['piece length']
     @number_of_pieces = @info['pieces'].length / 20

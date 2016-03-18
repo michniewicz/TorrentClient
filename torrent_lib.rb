@@ -4,7 +4,7 @@ require_relative 'lib/helpers/network_helper'
 require_relative 'lib/helpers/pretty_log'
 require_relative 'lib/helpers/serializer'
 
-require_relative 'lib/ruby-bencode/lib/bencode'
+require_relative 'lib/ruby_bencode/lib/bencode'
 
 require_relative 'lib/torrent_service'
 require_relative 'lib/bitfield'

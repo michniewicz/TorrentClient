@@ -83,7 +83,7 @@ class TorrentService
   # parse metainfo from given torrent file
   # @param [String] torrent_file
   def parse_meta_info(torrent_file)
-    MetaInfo.new(BEncode.load_file(torrent_file))
+    MetaInfo.new(Bencode::Decoder.decode_file(torrent_file))
   end
 
   # lambda for RequestHandler object
@@ -142,7 +142,7 @@ class TorrentService
     # consisting of multiples of 6 bytes.
     req = NetworkHelper.get_request(@meta_info.announce, params)
     # split string per each 6 bytes
-    peers = BEncode.load(req)['peers'].scan(/.{6}/)
+    peers = Bencode::Decoder.decode(req)['peers'].scan(/.{6}/)
 
     unpack_ports(peers).each do |host, port|
       add_peer(host, port)
